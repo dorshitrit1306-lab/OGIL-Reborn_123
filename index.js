@@ -87,6 +87,21 @@ function load() {
 }
 load();
 
+
+if (process.env.RESET_OWNER && db.meta.resetDone !== process.env.RESET_OWNER) {
+  for (const u of db.users) {
+    if (u.role === 'owner') {
+      u.role = 'player';
+      u.permissions = [];
+    }
+  }
+  db.meta.ownerClaimed = false;
+  db.meta.setupCode = rand(8);
+  db.meta.resetDone = process.env.RESET_OWNER;
+  db.sessions = {};
+  save();
+  console.log('Owner reset done. Use the new setup code below to become the owner.');
+}
 /* ---------- helpers ---------- */
 
 const isOwner = (u) => u.role === 'owner';
